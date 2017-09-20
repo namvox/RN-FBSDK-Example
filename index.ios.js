@@ -9,18 +9,28 @@ import { AppRegistry, StyleSheet, Text, View, Button } from "react-native";
 import { LoginManager } from "react-native-fbsdk";
 
 export default class FBSDKExample extends Component {
+  state = {
+    isLoggined: false
+  };
   loginWithFB = () => {
+    if (this.state.isLoggined) {
+      LoginManager.logOut();
+      this.setState({ isLoggined: false });
+      return;
+    }
     LoginManager.logInWithReadPermissions([
       "public_profile",
-      "email"
+      "email",
+      "user_friends"
     ]).then(result => {
       if (result.isCancelled) {
         // User cancelled to login with FB
       } else {
-        // Do you something
+        this.setState({ isLoggined: true });
       }
     });
   };
+
   render() {
     return (
       <View style={styles.container}>
@@ -32,7 +42,10 @@ export default class FBSDKExample extends Component {
           Press Cmd+R to reload,{"\n"}
           Cmd+D or shake for dev menu
         </Text>
-        <Button title="Login with FB" onPress={this.loginWithFB} />
+        <Button
+          title={this.state.isLoggined ? "Logout" : "Login with FB"}
+          onPress={this.loginWithFB}
+        />
       </View>
     );
   }
